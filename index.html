@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CIFAR-10 Image Classifier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .container {
+            background: white;
+            color: black;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            margin: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            margin: 20px 0;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #5a67d8;
+        }
+
+        img {
+            margin-top: 20px;
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .loader {
+            display: none;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🧠 CIFAR-10 Classifier</h1>
+    <p>Upload an image to predict its class</p>
+
+    <div class="container">
+        <input type="file" id="fileInput" accept="image/*"><br>
+        <button onclick="uploadImage()">Predict</button>
+
+        <div class="loader" id="loader">⏳ Predicting...</div>
+
+        <img id="preview" src="" alt="">
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        const API_URL = "https://your-render-url.onrender.com/predict"; 
+        // 🔁 Replace with your Render API URL
+
+        function uploadImage() {
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Please select an image!");
+                return;
+            }
+
+            // Show preview
+            const preview = document.getElementById("preview");
+            preview.src = URL.createObjectURL(file);
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            document.getElementById("loader").style.display = "block";
+            document.getElementById("result").innerText = "";
+
+            fetch(API_URL, {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("result").innerText = 
+                    "Prediction: " + data.prediction;
+            })
+            .catch(error => {
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("result").innerText = 
+                    "Error connecting to API";
+                console.error(error);
+            });
+        }
+    </script>
+
+</body>
+</html>
